@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+typer
+rich
+pydantic
+python-dotenv
+langgraph
+langchain
+langchain-core
+ollama
