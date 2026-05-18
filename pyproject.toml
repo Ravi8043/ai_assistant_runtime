@@ -1,0 +1,41 @@
+[project]
+name = "jarvis-runtime"
+version = "0.1.0"
+description = "Local-first AI assistant runtime"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "typer",
+    "rich",
+    "pydantic",
+    "python-dotenv",
+
+    "langgraph",
+    "langchain",
+    "langchain-core",
+
+    "ollama",
+]
+
+[project.scripts]
+jarvis = "apps.cli.main:app"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "assist_runtime",
+    "assist_runtime.services",
+    "apps",
+    "apps.cli",
+    "apps.cli.commands"
+]
+
+[tool.setuptools.package-dir]
+"assist_runtime" = "src/assist_runtime"
+"apps" = "apps"
