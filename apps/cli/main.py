@@ -11,14 +11,18 @@ app = typer.Typer()
 
 console = Console()
 
+
 def version_callback(version: bool):
     """
     Show version
     """
+
     if version:
+
         console.print(
             "[bold green]Jarvis Runtime v0.1.0[/bold green]"
         )
+
         raise typer.Exit()
 
 
@@ -41,27 +45,81 @@ def jarvis(
     if ctx.invoked_subcommand:
         return
 
-    if not prompt:
-        console.print(
-            "[bold red]Please provide a prompt[/bold red]"
-        )
-        raise typer.Exit()
-
     service = ChatService()
 
-    user_prompt = " ".join(prompt)
+    # One-shot mode
+    if prompt:
 
-    result = asyncio.run(
-        service.chat(user_prompt)
+        user_prompt = " ".join(prompt)
+
+        result = asyncio.run(
+            service.chat(user_prompt)
+        )
+
+        console.print(
+            Panel.fit(
+                result,
+                title="Jarvis"
+            )
+        )
+
+        return
+
+    # REPL mode
+    console.print(
+        "[bold green]Jarvis Runtime Started[/bold green]"
     )
 
     console.print(
-        Panel.fit(
-            result,
-            title="Jarvis"
-        )
+        "[dim]Type 'exit' or 'quit' to stop[/dim]"
     )
 
+    while True:
+
+        try:
+
+            user_prompt = console.input(
+                "\n[bold cyan]> [/bold cyan]"
+            ).strip()
+
+            if not user_prompt:
+                continue
+
+            if user_prompt.lower() in [
+                "exit",
+                "quit"
+            ]:
+
+                console.print(
+                    "[bold red]Shutting down Jarvis...[/bold red]"
+                )
+
+                break
+
+            result = asyncio.run(
+                service.chat(user_prompt)
+            )
+
+            console.print(
+                Panel.fit(
+                    result,
+                    title="Jarvis"
+                )
+            )
+
+        except KeyboardInterrupt:
+
+            console.print(
+                "\n[bold red]Interrupted[/bold red]"
+            )
+
+            break
+
+        except Exception as error:
+
+            console.print(
+                f"[bold red]Error:[/bold red] {error}"
+            )
 
 
 if __name__ == "__main__":
