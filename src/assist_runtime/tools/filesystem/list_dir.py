@@ -14,3 +14,8 @@ class ListDirTool(BaseTool):
         path = Path(input_data["path"])
 
         return [str(p.name) for p in path.iterdir()]
+
+
+# list = ListDirTool()
+
+# print(list.execute({"path": "./"}))

@@ -18,3 +18,8 @@ class ReadFileTool(BaseTool):
             raise FileNotFoundError(path)
 
         return path.read_text()
+
+
+# read = ReadFileTool()
+
+# print(read.execute({"path": "./list_dir.py"}))
