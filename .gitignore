@@ -1,27 +1,2 @@
-# Virtual Environments
-env003/
-venv/
-.venv/
-env/
-
-# Environment Variables
 .env
-.env.*
-
-# Python Build / Cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-.coverage
-htmlcov/
-build/
-dist/
-*.egg-info/
-jarvis_runtime.egg-info/
-
-# IDE / OS
-.vscode/
-.idea/
-.DS_Store
+env003/
