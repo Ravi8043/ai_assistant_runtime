@@ -1,0 +1,58 @@
+# Jarvis Assistant Runtime
+
+A powerful, LangGraph-powered AI Assistant designed to serve as an autonomous coding and system management companion. It leverages reasoning models to plan, execute tools, reflect on outcomes, and synthesize final responses.
+
+## Architecture
+
+The orchestration engine uses **LangGraph** to manage a robust state machine workflow:
+
+```mermaid
+graph TD
+    START --> planner
+    planner -- "requires_tools == True" --> tool_router
+    planner -- "requires_tools == False" --> responder
+    
+    tool_router --> tool_executor
+    tool_executor --> reflection
+    
+    reflection -- "objective_met" --> responder
+    reflection -- "needs_revision/continue" --> planner
+    reflection -- "max_iterations/error" --> error_handler
+    
+    responder --> END
+    error_handler --> END
+```
+
+### Core Nodes
+- **`planner`**: Evaluates the objective and builds a step-by-step JSON Execution Plan. Handles replanning if feedback is provided.
+- **`tool_router`**: Advances the plan and routes to the executor.
+- **`tool_executor`**: Safely executes tools, catching exceptions and returning standardized output.
+- **`reflection`**: Evaluates the tool's output (or errors) against the objective to decide if the plan succeeded, needs revision, or is finished.
+- **`responder`**: Synthesizes the execution context and finalizes a human-readable response.
+- **`error_handler`**: Gracefully manages loop terminations or catastrophic failures.
+
+## Capabilities & Tools
+
+Jarvis is equipped with a centralized `ToolRegistry` that can be easily extended. Built-in filesystem and system tools include:
+
+* **`list_dir`**: List contents of a given directory.
+* **`read_file`**: Read a file's contents safely with UTF-8 encoding.
+* **`write_file`**: Overwrite or create files.
+* **`find_file`**: Recursively locate files using glob patterns, automatically bypassing heavy directories (e.g., `.git`, `node_modules`).
+* **`grep_search`**: Recursively search inside text files for patterns or RegEx.
+* **`run_command`**: Execute system shell commands (e.g., Python scripts, tests) with output truncation and timeouts to protect context limits.
+
+## Smart JSON Parsing
+
+Reasoning models (like DeepSeek, Llama-3, Qwen) often inject `<think>` blocks before their JSON output. The `StructuredOutputParser` actively intercepts and strips these thought sequences before safely extracting the JSON blocks.
+
+## Running the Assistant
+
+You can invoke the assistant locally using the CLI:
+
+```bash
+# Example command
+jarvis
+```
+
+Ensure your environment variables (like API keys) are configured properly in your `.env` file before executing!
