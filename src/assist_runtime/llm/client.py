@@ -1,11 +1,13 @@
-from assist_runtime.llm.providers.ollama import OllamaClient
+from assist_runtime.llm.providers.groq import GroqClient
 from assist_runtime.llm.retry import retry_async
 from assist_runtime.llm.timeout import with_timeout
 
 
 class UnifiedLLMClient:
+
     def __init__(self):
-        self.provider = OllamaClient()
+
+        self.provider = GroqClient()
 
     async def generate(
         self,
@@ -13,13 +15,17 @@ class UnifiedLLMClient:
         timeout: int = 60,
         retries: int = 3
     ):
+
         async def call():
+
             return await self.provider.generate(
-                prompt=prompt,
-                timeout=timeout
+                prompt=prompt
             )
 
         return await retry_async(
-            lambda: with_timeout(call(), timeout),
+            lambda: with_timeout(
+                call(),
+                timeout
+            ),
             retries=retries
         )

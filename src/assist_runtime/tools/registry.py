@@ -4,7 +4,7 @@
 
 from typing import Dict
 
-from assist_runtime._tools.base import BaseTool
+from assist_runtime.tools.base import BaseTool
 
 class ToolRegistry:
     #constructor
@@ -42,7 +42,7 @@ class ToolRegistry:
         del self._tools[name]    
     
     #return all _tools
-    def get_all__tools(self):
+    def get_all_tools(self):
 
         return self._tools
     
