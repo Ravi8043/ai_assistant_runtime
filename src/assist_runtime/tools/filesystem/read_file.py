@@ -12,14 +12,17 @@ class ReadFileTool(BaseTool):
 
     def execute(self, input_data: dict):
         
-        path_str = input_data.get("path", ".")
+        path_str = input_data.get("path", ".") #default to current directory if no path provided
 
         path = Path(path_str)
 
         if not path.exists():
             raise FileNotFoundError(path)
 
-        return path.read_text(encoding="utf-8")
+        return {
+            "success": True,
+            "content": path.read_text(encoding="utf-8")
+            }
 
 
 # read = ReadFileTool()

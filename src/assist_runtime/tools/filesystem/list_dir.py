@@ -12,7 +12,7 @@ class ListDirTool(BaseTool):
     def execute(
         self,
         input_data: dict
-    ) -> dict:
+    ):
 
         try:
 
@@ -53,7 +53,7 @@ class ListDirTool(BaseTool):
             return {
                 "success": True,
                 "path": str(path.resolve()),
-                "items": items
+                "content": items
             }
 
         except Exception as error:

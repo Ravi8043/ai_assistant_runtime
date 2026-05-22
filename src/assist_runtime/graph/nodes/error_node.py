@@ -18,7 +18,7 @@ from assist_runtime.graph.state import GraphState
 logger = logging.getLogger(__name__)
 
 
-def create_error_handler_node() -> Any:
+def create_error_handler_node() -> Any: #returns a Callable[[GraphState], dict]
     """
     Factory that returns the error-handler node function.
 
@@ -26,7 +26,7 @@ def create_error_handler_node() -> Any:
     and produces a user-friendly ``final_response``.
     """
 
-    async def error_handler_node(state: GraphState) -> dict[str, Any]:
+    async def error_handler_node(state: GraphState) -> dict:
         """
         Formats whatever is stored in ``state["error"]`` into a graceful,
         user-facing message and terminates the workflow.
@@ -47,7 +47,7 @@ def create_error_handler_node() -> Any:
             "is_complete": True,
             "error": None,  # Clear so downstream consumers don't re-trigger
             "messages": [
-                AIMessage(content=f"[ERROR] {raw_error}")
+                AIMessage(content=user_message)
             ],
         }
 

@@ -13,7 +13,7 @@ class BaseTool(ABC):
     def execute(
         self, 
         input_data: Dict[str, Any]
-    ) -> Any:
+    ) -> dict:
         """
         All tools must implement this
         """

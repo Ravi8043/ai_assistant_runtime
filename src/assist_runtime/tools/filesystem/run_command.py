@@ -5,7 +5,7 @@ class RunCommandTool(BaseTool):
     name = "run_command"
     description = 'Executes a shell command on the host system. Required tool_input: {"command": "<shell_command>", "cwd": "<working_directory>"}'
 
-    def execute(self, input_data: dict) -> dict:
+    def execute(self, input_data: dict):
         command = input_data.get("command")
         cwd = input_data.get("cwd", ".")
         timeout = input_data.get("timeout", 60)

@@ -6,7 +6,7 @@ class WriteFileTool(BaseTool):
     name = "write_file"
     description = 'Writes content to a file at the specified path. Required tool_input: {"file_path": "<file_path>", "content": "<file_content>"}'
     
-    def execute(self, input_data: dict) -> str:
+    def execute(self, input_data: dict):
         """
         Expects input_data to have the following structure:
         {
@@ -27,4 +27,7 @@ class WriteFileTool(BaseTool):
         with open(file_path, 'w', encoding="utf-8") as f:
             f.write(content)
 
-        return f"Content successfully written to {file_path}"
+        return {
+            "success": True,
+            "message": f"Content successfully written to {file_path}"
+        }
