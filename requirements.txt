@@ -1,0 +1,23 @@
+# Core Runtime Dependencies
+fastapi
+uvicorn
+typer
+rich
+pydantic
+python-dotenv
+typing-extensions
+
+# LangChain & LangGraph Orchestration
+langgraph
+langchain
+langchain-core
+langchain-groq
+langchain-community
+# LLM Providers & SDKs
+ollama
+
+# Visualization & Interactive Environments
+ipython
+
+# Development & Testing
+pytest
