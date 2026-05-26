@@ -177,7 +177,7 @@ def create_planner_node(
                     input_text=state.get("input_text", ""),
                 )
 
-                raw_response = await llm_client.generate(prompt=prompt)
+                raw_response = await llm_client.generate(prompt=prompt) ##dependency injection
                 parsed = parser.parse(raw_response)
 
                 if parsed is None:

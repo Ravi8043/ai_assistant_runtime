@@ -21,13 +21,3 @@
 
 
                 input
-session
-messages
-current_plan
-selected_tool
-tool_input
-tool_output
-final_response
-next_node
-is_complete
-error

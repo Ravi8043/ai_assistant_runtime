@@ -21,7 +21,7 @@ class ListDirTool(BaseTool):
                 "."
             )
 
-            path = Path(path_str)
+            path = Path(path_str).expanduser()
 
             if not path.exists():
 

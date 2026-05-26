@@ -13,7 +13,7 @@ class GrepSearchTool(BaseTool):
         if not query:
             return {"success": False, "error": "Missing 'query' in tool_input"}
 
-        start_path = Path(path_str)
+        start_path = Path(path_str).expanduser()
         if not start_path.exists():
             return {"success": False, "error": f"Path does not exist: {path_str}"}
 

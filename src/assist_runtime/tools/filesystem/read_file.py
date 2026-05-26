@@ -14,7 +14,7 @@ class ReadFileTool(BaseTool):
         
         path_str = input_data.get("path", ".") #default to current directory if no path provided
 
-        path = Path(path_str)
+        path = Path(path_str).expanduser()
 
         if not path.exists():
             raise FileNotFoundError(path)

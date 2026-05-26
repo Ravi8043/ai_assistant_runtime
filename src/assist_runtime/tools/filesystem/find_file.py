@@ -1,3 +1,5 @@
+import os
+import fnmatch
 from pathlib import Path
 from assist_runtime.tools.base import BaseTool
 
@@ -12,34 +14,30 @@ class FindFileTool(BaseTool):
         if not pattern:
             return {"success": False, "error": "Missing 'pattern' in tool_input"}
 
-        start_path = Path(path_str)
+        start_path = Path(path_str).expanduser()
         if not start_path.exists() or not start_path.is_dir():
             return {"success": False, "error": f"Path is not a valid directory: {path_str}"}
         
         ignored_dirs = {".git", "node_modules", "__pycache__", "env", "venv"}
         matches = []
         
-        # We'll use a manual walk to efficiently skip ignored directories
-        def search_dir(current_dir: Path):
-            if len(matches) > 100:  # Cap at 100 matches to prevent massive outputs
-                return
-            
-            try:
-                for item in current_dir.iterdir():
-                    if item.is_dir():
-                        if item.name not in ignored_dirs:
-                            search_dir(item)
-                    elif item.match(pattern):
-                        matches.append(str(item.resolve()))
-            except PermissionError:
-                pass
+        for root, dirs, files in os.walk(start_path):
+            if len(matches) >= 100:
+                break
                 
-        search_dir(start_path)
-        
+            # In-place modify dirs to skip ignored directories efficiently
+            dirs[:] = [d for d in dirs if d not in ignored_dirs]
+            
+            for file_name in files:
+                if fnmatch.fnmatch(file_name, pattern):
+                    matches.append(os.path.join(root, file_name))
+                    if len(matches) >= 100:
+                        break
+                        
         return {
             "success": True,
             "pattern": pattern,
             "matches": matches,
             "count": len(matches),
-            "note": "Output capped at 100 matches" if len(matches) > 100 else ""
+            "note": "Output capped at 100 matches" if len(matches) >= 100 else ""
         }

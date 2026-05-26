@@ -21,13 +21,14 @@ class WriteFileTool(BaseTool):
             raise ValueError("Both 'file_path' and 'content' are required in input_data.")
 
         # Ensure the directory exists
-        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        path = Path(file_path).expanduser()
+        path.parent.mkdir(parents=True, exist_ok=True)
 
         # Write content to the file
-        with open(file_path, 'w', encoding="utf-8") as f:
+        with open(path, 'w', encoding="utf-8") as f:
             f.write(content)
 
         return {
             "success": True,
-            "message": f"Content successfully written to {file_path}"
+            "message": f"Content successfully written to {path}"
         }

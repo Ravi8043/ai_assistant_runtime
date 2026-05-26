@@ -72,9 +72,7 @@ def create_tool_router_node(
                     ]
                 }
 
-            current_step = plan.steps[
-                step_index
-            ]
+            current_step = plan.steps[step_index]
 
             tool_name = current_step.tool_suggested
 
