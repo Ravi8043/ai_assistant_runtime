@@ -1,11 +1,18 @@
 import asyncio
-
+import logging
 import typer
 
 from rich.console import Console
 from rich.panel import Panel
 
 from assist_runtime.services.chat_service import ChatService
+from assist_runtime.config.logging import setup_logging
+
+setup_logging(debug_mode=True)
+
+logger = logging.getLogger(__name__)
+
+logger.info("Application started :) \n")
 
 app = typer.Typer()
 
