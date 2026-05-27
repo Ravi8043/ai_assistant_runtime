@@ -12,6 +12,7 @@ langgraph
 langchain
 langchain-core
 langchain-groq
+langchain-ollama
 langchain-community
 # LLM Providers & SDKs
 ollama
@@ -21,3 +22,5 @@ ipython
 
 # Development & Testing
 pytest
+
+sentence-transformers
