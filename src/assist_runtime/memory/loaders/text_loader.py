@@ -4,6 +4,7 @@ from langchain_community.document_loaders import TextLoader as LangChainTextLoad
 from assist_runtime.memory.loaders.base import BaseLoader
 from assist_runtime.memory.schemas.document import RawDocument
 from assist_runtime.memory.loaders.validators import validate_file_path
+from assist_runtime.memory.exceptions import MemoryLoadError
 
 logger = logging.getLogger(__name__)
 
