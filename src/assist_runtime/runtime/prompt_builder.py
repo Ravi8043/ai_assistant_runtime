@@ -16,17 +16,15 @@ Code Block:
 
 RESPOND STRICTLY IN VALID JSON FORMAT MATCHING THIS EXACT SCHEMA. DO NOT ESCAPE OUTSIDE THE JSON:
 {{
-  "purpose": "A concise single-sentence description of the file's primary mandate.",
-  "exports": ["List of exported functions, classes, or symbols"],
-  "env_vars": ["List of environment variables used"],
-  "commands": [
+  "purpose": "A concise two to three-sentence description of the file's primary mandate.",
+  "exposed_commands": [
     {{
-      "command": "The exact script string or execution line",
-      "description": "Short description"
+      "command": "The exact script string or execution line if this file declares or runs one (e.g., 'bun test:evals')",
+      "description": "Short inline bash comment explanation of what the command achieves."
     }}
   ],
-  "dependencies": ["List of internal or external dependencies imported"],
-  "side_effects": ["List of side effects, file I/O, network calls, etc."]
+  "architectural_constraints": ["List of environmental prerequisites, ports, or critical failure modes found in code comments/logic"],
+  "sub_modules": ["List of sub-directories, files, or symbols imported/exported from here"]
 }}
 """
 
@@ -43,7 +41,7 @@ Extracted Source Metrics:
 
 YOUR RESPONSE MUST STRICTLY FOLLOW THIS MARKDOWN BREAKDOWN SCHEMA:
 ### Module: {module_name}
-- **Mandate**: A 1-2 sentence description of what this module encapsulates.
+- **Mandate**: A 2-3 sentence description of what this module encapsulates.
 - **Commands Introduced**: Compile any shell/run commands found in this module. Format exactly as a bulleted list of text lines.
 - **System Constraints**: List any ports, env variables, or operational boundaries found here.
 - **ASCII Directory Segment**: Formulate a tight text-based representation of the files in this module (e.g., └── code.ts # comment) based on the input paths.
