@@ -1,74 +1,33 @@
-import os
-import json
 from assist_runtime.workflows.state import WorkflowState
 from assist_runtime.workflows.artifacts import ArtifactWriter
-from assist_runtime.llm.client import UnifiedLLMClient
-from assist_runtime.workflows.repo_analysis.prompts import REPO_ANALYSIS_PROMPT
+from assist_runtime.runtime.services.repository_service import RepositoryService
+from assist_runtime.runtime.services.summarization_service import SummarizationService
+from assist_runtime.runtime.tracer import WorkflowTracer
+import time
 
 async def scan_repository(state: WorkflowState) -> WorkflowState:
     repo_path = state.metadata.get("repo_path", ".")
-    ignore_dirs = {".git", "__pycache__", "node_modules", "env", "venv"}
-    
-    file_list = []
-    
-    for root, dirs, files in os.walk(repo_path):
-        dirs[:] = [d for d in dirs if d not in ignore_dirs]
-        for f in files:
-            full_path = os.path.join(root, f)
-            rel_path = os.path.relpath(full_path, repo_path)
-            try:
-                size = os.path.getsize(full_path)
-            except OSError:
-                size = 0
-            file_list.append({
-                "path": rel_path,
-                "size": size,
-                "ext": os.path.splitext(f)[1]
-            })
-            
-    state.step_outputs["scanned_files"] = file_list
+    scan_ref_id = RepositoryService.scan_repository(repo_path)
+    state.metadata["repo_scan_ref"] = scan_ref_id
     return state
 
-async def detect_languages(state: WorkflowState) -> WorkflowState:
-    file_list = state.step_outputs.get("scanned_files", [])
-    
-    ext_counts = {}
-    for f in file_list:
-        ext = f["ext"]
-        if ext:
-            ext_counts[ext] = ext_counts.get(ext, 0) + 1
-            
-    state.step_outputs["language_counts"] = ext_counts
-    return state
-
-async def map_modules(state: WorkflowState) -> WorkflowState:
-    # Just group files by top-level directory for simplicity
-    file_list = state.step_outputs.get("scanned_files", [])
-    modules = {}
-    
-    for f in file_list:
-        path_parts = f["path"].split(os.sep)
-        module_name = path_parts[0] if len(path_parts) > 1 else "root"
-        modules.setdefault(module_name, []).append(f["path"])
-        
-    state.step_outputs["modules"] = modules
-    return state
-
-async def generate_summary(state: WorkflowState) -> WorkflowState:
+async def summarize_repository(state: WorkflowState) -> WorkflowState:
     llm_client = state.metadata.get("llm_client")
+    scan_ref_id = state.metadata.get("repo_scan_ref")
+    
     if not llm_client:
         raise ValueError("llm_client not found in workflow metadata")
+    if not scan_ref_id:
+        raise ValueError("repo_scan_ref not found in workflow metadata")
         
-    # Prepare data dump for prompt
-    data_dump = json.dumps({
-        "languages": state.step_outputs.get("language_counts", {}),
-        "modules": {k: len(v) for k, v in state.step_outputs.get("modules", {}).items()},
-        "total_files": len(state.step_outputs.get("scanned_files", []))
-    }, indent=2)
+    start_time = time.time()
+    summary = await SummarizationService.summarize_repository_hierarchy(scan_ref_id, llm_client)
+    duration_ms = (time.time() - start_time) * 1000
     
-    prompt = REPO_ANALYSIS_PROMPT.format(scanned_data=data_dump)
+    # We record LLM call trace manually here since the service makes the call, 
+    # but ideally the LLM client would log itself.
+    WorkflowTracer.on_llm_call(state.workflow_id, duration_ms=duration_ms)
     
-    summary = await llm_client.generate(prompt)
     state.step_outputs["summary_markdown"] = summary
     return state
 

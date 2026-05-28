@@ -1,9 +1,7 @@
 from assist_runtime.workflows.base import SequentialWorkflow
 from assist_runtime.workflows.repo_analysis.nodes import (
     scan_repository,
-    detect_languages,
-    map_modules,
-    generate_summary,
+    summarize_repository,
     write_artifact
 )
 
@@ -14,9 +12,7 @@ class RepoAnalysisWorkflow(SequentialWorkflow):
     def __init__(self):
         super().__init__(steps=[
             scan_repository,
-            detect_languages,
-            map_modules,
-            generate_summary,
+            summarize_repository,
             write_artifact
         ])
 
