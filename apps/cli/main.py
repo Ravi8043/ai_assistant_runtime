@@ -7,6 +7,14 @@ from rich.panel import Panel
 
 from assist_runtime.services.chat_service import ChatService
 from assist_runtime.config.logging import setup_logging
+from assist_runtime.workflows.repo_analysis.workflow import RepoAnalysisWorkflow
+from assist_runtime.workflows.document_summary.workflow import DocumentSummaryWorkflow
+from assist_runtime.workflows.repo_qa.workflow import RepoQAWorkflow
+from assist_runtime.workflows.state import WorkflowState
+from assist_runtime.llm.client import UnifiedLLMClient
+from assist_runtime.memory.embedders.sentence_transformer import SentenceTransformerEmbedder
+from assist_runtime.memory.vector_store.chroma import ChromaVectorStore
+from assist_runtime.memory.retrieval.retriever import Retriever
 
 setup_logging(debug_mode=True)
 
@@ -128,6 +136,71 @@ def jarvis(
                 f"[bold red]Error:[/bold red] {error}"
             )
 
+
+@app.command()
+def analyze(
+    repo_path: str = typer.Argument(".", help="Path to repository to analyze")
+):
+    """Run the repository analysis workflow."""
+    console.print(f"[bold cyan]Starting Repo Analysis on {repo_path}...[/bold cyan]")
+    workflow = RepoAnalysisWorkflow()
+    llm_client = UnifiedLLMClient()
+    
+    state = WorkflowState(
+        workflow_name="repo_analysis",
+        metadata={"repo_path": repo_path, "llm_client": llm_client}
+    )
+    
+    result = asyncio.run(workflow.run(state))
+    if result.success:
+        console.print(f"[bold green]Success![/bold green] Artifact generated at: {result.artifacts[0] if result.artifacts else 'none'}")
+    else:
+        console.print(f"[bold red]Failed:[/bold red] {result.error}")
+
+@app.command()
+def summarize(
+    files: list[str] = typer.Argument(..., help="Files to summarize")
+):
+    """Run the document summarization workflow."""
+    console.print(f"[bold cyan]Starting Document Summarization...[/bold cyan]")
+    workflow = DocumentSummaryWorkflow()
+    llm_client = UnifiedLLMClient()
+    
+    state = WorkflowState(
+        workflow_name="document_summary",
+        metadata={"file_paths": files, "llm_client": llm_client}
+    )
+    
+    result = asyncio.run(workflow.run(state))
+    if result.success:
+        console.print(f"[bold green]Success![/bold green] Artifact generated at: {result.artifacts[0] if result.artifacts else 'none'}")
+    else:
+        console.print(f"[bold red]Failed:[/bold red] {result.error}")
+
+@app.command()
+def ask(
+    question: str = typer.Argument(..., help="Question to ask"),
+    repo_path: str = typer.Option(".", help="Repository context path")
+):
+    """Ask a question about the repository using Q&A workflow."""
+    console.print(f"[bold cyan]Answering question: {question}[/bold cyan]")
+    workflow = RepoQAWorkflow()
+    llm_client = UnifiedLLMClient()
+    embedder = SentenceTransformerEmbedder()
+    vector_store = ChromaVectorStore()
+    retriever = Retriever(embedder=embedder, vector_store=vector_store)
+    
+    state = WorkflowState(
+        workflow_name="repo_qa",
+        goal=question,
+        metadata={"repo_path": repo_path, "llm_client": llm_client, "retriever": retriever}
+    )
+    
+    result = asyncio.run(workflow.run(state))
+    if result.success:
+        console.print(f"[bold green]Success![/bold green] Answer recorded.")
+    else:
+        console.print(f"[bold red]Failed:[/bold red] {result.error}")
 
 if __name__ == "__main__":
     app()

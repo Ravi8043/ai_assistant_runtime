@@ -1,9 +1,3 @@
-class MemoryError(Exception):
-    pass
+from assist_runtime.memory.exceptions import MemoryError, MemoryLoadError
 
-class MemoryLoadError(MemoryError):
-
-    def __init__(self, message: str):
-
-        super().__init__(message)
-        self.message = message
+__all__ = ["MemoryError", "MemoryLoadError"]

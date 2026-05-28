@@ -43,8 +43,6 @@ from assist_runtime.llm.client import UnifiedLLMClient
 from assist_runtime.llm.parsing.structured import StructuredOutputParser
 from assist_runtime.tools.executor import ToolExecutor
 from assist_runtime.tools.registry import ToolRegistry
-from IPython.display import display, Image
-
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +169,6 @@ def build_graph(
 
     checkpointer = InMemorySaver()
     compiled = graph.compile(checkpointer=checkpointer)
-    display(Image(compiled.get_graph().draw_mermaid_png()))
 
     logger.info(
         "Agent orchestration graph compiled successfully "

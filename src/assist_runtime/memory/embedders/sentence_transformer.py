@@ -4,6 +4,7 @@ import logging
 from sentence_transformers import SentenceTransformer
 
 from assist_runtime.memory.embedders.base import BaseEmbedder
+from assist_runtime.memory.exceptions import MemoryLoadError
 
 logger = logging.getLogger(__name__)
 
